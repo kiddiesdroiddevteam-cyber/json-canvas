@@ -19,7 +19,8 @@ export interface QuestionData {
  * Matches your controller: exports.addQuestion = async (req, res) => ...
  */
 export const questionService = async (
-  jsonData: QuestionData | QuestionData[]
+  jsonData: QuestionData | QuestionData[],
+  setUploading: (uploading: boolean) => void
 ): Promise<QuestionData | QuestionData[]> => {
   
   const API_URL = 'https://past-questions-api.onrender.com/api/questions';
@@ -32,7 +33,8 @@ export const questionService = async (
       API_URL, 
       jsonData
     );
-
+    setUploading(false);
+    alert("Upload successful!y");
     return response.data;
   } catch (error: any) {
     // Extracts the { error: err.message } sent by your controller's catch block

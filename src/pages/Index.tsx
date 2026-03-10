@@ -3,6 +3,7 @@ import { FileText, FileJson, Loader2, X, ChevronRight, Braces, Settings2 } from 
 import UploadZone from "@/components/UploadZone";
 import JsonEditor from "@/components/JsonEditor";
 import { parseExamPDF } from '../services/pdftojson'
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 type Mode = "idle" | "loading" | "editor";
@@ -18,6 +19,7 @@ const Index = () => {
   const [metadata, setMetadata] = useState({
     examType: "JAMB",
     subject: "",
+    imageUrl: "",
     examYear: new Date().getFullYear(),
   });
 
@@ -64,7 +66,7 @@ const Index = () => {
               <Braces className="w-4 h-4 text-primary-foreground" />
             </div>
             <span className="font-semibold text-sm tracking-tight text-foreground">
-              {/* PDF<span className="text-gradient-amber">JSON</span> */}
+            <Link to={'/questions'} className="text-white underline">Manage Questions</Link>
             </span>
           </div>
           {mode === "editor" && (

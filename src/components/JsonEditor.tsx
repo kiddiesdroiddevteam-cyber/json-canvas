@@ -3,6 +3,7 @@ import ReactJson from "react-json-view";
 import { Copy, Check, Download, Braces, ListChecks, Upload, Type } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {questionService} from "../services/index"
+import Loader from "./Loader";
 
 interface JsonEditorProps {
   value: string;
@@ -10,10 +11,11 @@ interface JsonEditorProps {
   filename?: string;
 }
 
-const JsonEditor = ({ value, onChange, filename }: JsonEditorProps) => {
+const JsonEditor = ({ value, onChange }: JsonEditorProps) => {
   const [copied, setCopied] = useState(false);
   const [showBulkInput, setShowBulkInput] = useState(false);
   const [bulkAnswers, setBulkAnswers] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const jsonObject = useMemo(() => {
     try {
@@ -62,21 +64,19 @@ const JsonEditor = ({ value, onChange, filename }: JsonEditorProps) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // const handleDownload = () => {
-  //   const blob = new Blob([value], { type: "application/json" });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement("a");
-  //   a.href = url;
-  //   a.download = filename ? filename.replace(/\.pdf$/i, ".json") : "data.json";
-  //   a.click();
-  //   URL.revokeObjectURL(url);
-  // };
-
   const handleUpload = () => {
+    setUploading(true);
     console.log("Uploading JSON to backend...", jsonObject.questions);
-   questionService(jsonObject.questions);
+   questionService(jsonObject.questions, setUploading);
   }
 
+  if(uploading) {
+    return(
+      <>
+       <Loader />
+      </>
+    )
+  }
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden border border-border shadow-lg bg-card">
       {/* Toolbar */}
@@ -165,7 +165,7 @@ const JsonEditor = ({ value, onChange, filename }: JsonEditorProps) => {
               if (Array.isArray(targetArray)) {
                 targetArray.forEach((q, index) => {
                   if (answersArray[index]) {
-                    q.answer = answersArray[index];
+                    q.correctAnswer = answersArray[index];
                   }
                 });
                 onChange(JSON.stringify(newObj, null, 2));
@@ -189,33 +189,6 @@ const JsonEditor = ({ value, onChange, filename }: JsonEditorProps) => {
     </div>
   </div>
 )}
-
-      {/* Bulk Input Overlay
-      {showBulkInput && (
-        <div className="bg-secondary/50 p-4 border-b border-border animate-in slide-in-from-top duration-200">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Paste Answer Key (e.g. 1.Photosynthesis, 2.Respiration )</span>
-              <span className="text-[10px] text-primary">Detected: {(bulkAnswers.match(/[A-E]/gi) || []).length} answers</span>
-            </div>
-            <div className="flex gap-2">
-              <textarea 
-                value={bulkAnswers}
-                onChange={(e) => setBulkAnswers(e.target.value)}
-                placeholder="A B C D A..."
-                className="flex-1 min-h-[40px] max-h-[120px] bg-background border border-border rounded-md p-2 text-sm font-mono outline-none focus:ring-1 ring-primary/30"
-              />
-              <button 
-                onClick={applyBulkAnswers}
-                disabled={!bulkAnswers}
-                className="px-4 bg-primary text-primary-foreground rounded-md text-xs font-bold hover:opacity-90 disabled:opacity-50"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
 
       {/* Editor Area */}
       <div className="flex-1 overflow-auto p-4 bg-[#1e1e1e]">
