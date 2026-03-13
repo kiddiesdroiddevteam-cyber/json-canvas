@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosProgressEvent } from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://past-questions-api.onrender.com/api';
 
 // 1. Define types for the request and response
 export interface ExamMetadata {
