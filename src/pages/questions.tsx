@@ -87,6 +87,16 @@ export const QuestionManager = () => {
     }
   };
 
+  const handleBulkUpdateSubject = (newSubjectName) => {
+  if (!newSubjectName) return;
+  
+  const updatedQuestions = questions.map(q => ({
+    ...q,
+    subject: newSubjectName
+  }));
+  
+  setQuestions(updatedQuestions);
+};
   // 6. Delete Entire Pack
   const handleDeletePack = async () => {
     if (!questions.length) return;
@@ -163,33 +173,53 @@ export const QuestionManager = () => {
 
       {/* EDITOR SECTION */}
       {questions.length > 0 ? (
-        <div className="mt-4 space-y-4">
-          <div className="flex justify-between items-center bg-white p-4 border rounded shadow-sm">
-            <div>
-              <p className="text-sm text-gray-600">
-                Viewing: <span className="font-bold text-black">{filters.subject} {filters.examType} {filters.examYear}</span>
-              </p>
-              <p className="text-xs text-blue-600 font-semibold uppercase mt-1">
-                {dirtyCount} unsaved changes
-              </p>
-            </div>
-            
-            <div className="flex gap-3">
-              <button 
-                onClick={handleDeletePack}
-                className="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded hover:bg-red-600 hover:text-white transition-all"
-              >
-                Delete Pack
-              </button>
-              <button 
-                onClick={handleSave}
-                disabled={dirtyCount === 0 || loading}
-                className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md"
-              >
-                Save {dirtyCount} Changes
-              </button>
-            </div>
-          </div>
+      <div className="mt-4 space-y-4">
+    <div className="flex flex-wrap justify-between items-center bg-white p-4 border rounded shadow-sm gap-4">
+      <div>
+        <p className="text-sm text-gray-600">
+          Viewing: <span className="font-bold text-black">{filters.subject} {filters.examType} {filters.examYear}</span>
+        </p>
+        <p className="text-xs text-blue-600 font-semibold uppercase mt-1">
+          {dirtyCount} unsaved changes
+        </p>
+      </div>
+
+      {/* BULK UPDATE TOOL */}
+      <div className="flex items-center gap-2 border-l pl-4">
+        <input 
+          type="text" 
+          placeholder="New Subject Name"
+          id="bulkSubjectInput"
+          className="p-2 border bg-transparent text-black rounded text-sm w-40"
+        />
+        <button 
+          onClick={() => {
+            const input = document.getElementById('bulkSubjectInput') as HTMLInputElement | null;
+            const val = input ? input.value : '';
+            handleBulkUpdateSubject(val);
+          }}
+          className="bg-gray-800 text-white px-3 py-2 rounded text-sm hover:bg-black transition-colors"
+        >
+          Bulk Rename Subject
+        </button>
+      </div>
+      
+      <div className="flex gap-3">
+        <button 
+          onClick={handleDeletePack}
+          className="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded hover:bg-red-600 hover:text-white transition-all"
+        >
+          Delete Pack
+        </button>
+        <button 
+          onClick={handleSave}
+          disabled={dirtyCount === 0 || loading}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md"
+        >
+          Save {dirtyCount} Changes
+        </button>
+      </div>
+    </div>
 
           <div className="border rounded-lg overflow-hidden bg-white shadow-lg">
             <JsonEditor 
